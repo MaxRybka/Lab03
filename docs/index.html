@@ -21,10 +21,17 @@
 	    <img src="https://png2.kisspng.com/20180404/pse/kisspng-laptop-computer-icons-desktop-computers-computer-s-computer-desktop-pc-5ac483686cf243.0473250015228281364463.png" width="30" height="30" class="d-inline-block align-top" alt="">
 	    Store
 	  </a>
+	  <form class="form-inline my-2 my-lg-0">
+    
+	  <button class="btn" id = "adminmodal" data-toggle="modal" data-target="#adminModal">
+	  	Login
+	  </button>
 	  <button class="btn btn-light" id = "cart-button" data-toggle="modal" data-target="#cartModal">
 		<img src = "https://png2.kisspng.com/20171217/c0d/5a364b752c0633.9984354215135077011803.png" class = "shoping-cart-image">
 		<span class="badge badge-success" id = "shop-counter"></span>
 	  </button>
+
+    </form>
 	</nav>
 
 	<div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -66,6 +73,32 @@
 	        <button type="button" class="btn btn-secondary" id = "secondary-order-btn" >Close</button>
 	        <button type="button" class="btn btn-primary" id="primary-order-btn"  >Order</button>
 	      </div>	
+	    </div>
+	  </div>
+	</div>
+	<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	  <div class="modal-dialog modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalCenterTitle">Login</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="form-group">
+		      <label for="exampleDropdownFormEmail1">Login</label>
+		      <input type="email" class="form-control" id="exampleDropdownFormEmail1" placeholder="email@example.com">
+		    </div>
+		    <div class="form-group">
+		      <label for="exampleDropdownFormPassword1">Password</label>
+		      <input type="password" class="form-control" id="exampleDropdownFormPassword1" placeholder="Password">
+		    </div>
+		     <button type="submit" class="btn btn-primary">Sign in</button>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	      </div>
 	    </div>
 	  </div>
 	</div>
