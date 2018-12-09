@@ -10,6 +10,7 @@ window.$ = $;
 let _makeProduct = require('./modules/product-html');
 let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
+let _makeTable = require('./modules/table-html');
 
 var _cart_products = [];
 var _token = "ngz_9ff2iBb_1-nGt__J";
@@ -384,6 +385,18 @@ function CorrectLogin (){
 	if(login=="login"&&pass=="pass")return true;
 	return false;
 };
+jQuery.ajax({
+	url: 'https://nit.tron.net.ua/api/product/list',
+	method: 'get',
+	dataType: 'json',
+	success: function(json){
+		json.forEach(product => $('.table-body').append(_makeTable(product)));
+	},
+	error: function(xhr){
+		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+	},
+	
+});
 
 $(document).on('click' , '#sign-in' , function(){
 	console.log("signin")
