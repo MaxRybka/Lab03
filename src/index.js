@@ -11,6 +11,7 @@ let _makeProduct = require('./modules/product-html');
 let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
 let _makeTable = require('./modules/table-html');
+let _makeCategoryTable = require('./modules/category-table-html');
 
 var _cart_products = [];
 var _token = "ngz_9ff2iBb_1-nGt__J";
@@ -296,6 +297,7 @@ $(document).on('click' , '.menu-btn' , function(){
 });
 
 $(document).on('click', '.close-product-info' , function(){
+
 	$(this).closest('.cardBlock').find('.product-info').css('color','rgba(0,0,0,0)');
 	$(this).closest('.cardBlock').find('.product-info').css('background-color','rgba(255,255,255,0)');
 	$(this).closest('.cardBlock').find('.product-info').css('pointer-events','none');
@@ -390,7 +392,19 @@ jQuery.ajax({
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
-		json.forEach(product => $('.table-body').append(_makeTable(product)));
+		json.forEach(product => $('.product-table').append(_makeTable(product)));
+	},
+	error: function(xhr){
+		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+	},
+	
+});
+jQuery.ajax({
+	url: 'https://nit.tron.net.ua/api/category/list',
+	method: 'get',
+	dataType: 'json',
+	success: function(json){
+		json.forEach(product => $('.category-table').append(_makeCategoryTable(product)));
 	},
 	error: function(xhr){
 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
@@ -398,10 +412,10 @@ jQuery.ajax({
 	
 });
 
+
 $(document).on('click' , '#sign-in' , function(){
-	console.log("signin")
 	if(CorrectLogin()){
-		console.log("if")
+		$('.product-grid').empty();
 		$('.admin-panel').removeClass('d-none');
 		$( "#adminmodal" ).remove();
 		$( "#cart-button" ).before( `<button class="btn alert-danger admin-sign-out">
@@ -412,12 +426,12 @@ $(document).on('click' , '#sign-in' , function(){
 });
 
 $(document).on('click' , '.admin-sign-out' , function(){
+	AllList();
 	$('.admin-panel').addClass('d-none');
 	$( "#cart-button" ).before( `<button class="btn " id="adminmodal" data-toggle="modal" data-target="#adminModal">
 				Login
 			</button> `);
 	$( ".admin-sign-out" ).remove();
-
 });
 
 $(document).on('click' , '#secondary-order-btn' , function(){
