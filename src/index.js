@@ -169,10 +169,6 @@ function setRightInput(el){
 	}
 }
 
-
-
-
-
 AllList(); // create a standart list of all products
 
 jQuery.ajax({
@@ -303,7 +299,7 @@ $(document).on('click', '.close-product-info' , function(){
 	$(this).closest('.cardBlock').find('.product-info').css('background-color','rgba(255,255,255,0)');
 	$(this).closest('.cardBlock').find('.product-info').css('pointer-events','none');
 	$(this).closest('.cardBlock').find('.close-product-info').css('visibility','hidden');
-		$(this).closest('.cardBlock').find('.product-info-text').css('overflow-y','hidden');
+	$(this).closest('.cardBlock').find('.product-info-text').css('overflow-y','hidden');
 
 });
 
@@ -381,6 +377,35 @@ $(document).on('click' , '#primary-order-btn' , function(){
 
 });
 
+function CorrectLogin (){
+	var login= $('#logininput').val();
+	var pass= $('#passwordinput').val();
+	//Test input -------------------------------
+	if(login=="login"&&pass=="pass")return true;
+	return false;
+};
+
+$(document).on('click' , '#sign-in' , function(){
+	console.log("signin")
+	if(CorrectLogin()){
+		console.log("if")
+		$('.admin-panel').removeClass('d-none');
+		$( "#adminmodal" ).remove();
+		$( "#cart-button" ).before( `<button class="btn alert-danger admin-sign-out">
+				Sign Out
+			</button> `);
+	}
+	
+});
+
+$(document).on('click' , '.admin-sign-out' , function(){
+	$('.admin-panel').addClass('d-none');
+	$( "#cart-button" ).before( `<button class="btn " id="adminmodal" data-toggle="modal" data-target="#adminModal">
+				Login
+			</button> `);
+	$( ".admin-sign-out" ).remove();
+
+});
 
 $(document).on('click' , '#secondary-order-btn' , function(){
 	if(orderActive){
