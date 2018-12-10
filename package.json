@@ -27,7 +27,10 @@
     "webpack-dev-server": "^3.1.10"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
     "jquery-mask-plugin": "^1.14.15",
+    "mysql": "^2.16.0",
     "popper.js": "^1.14.5"
   }
 }

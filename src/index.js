@@ -10,7 +10,9 @@ window.$ = $;
 let _makeProduct = require('./modules/product-html');
 let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
+// let _con = require('./modules/db_c');
 
+var localIP = "192.168.31.21:8080";
 var _cart_products = [];
 var _token = "ngz_9ff2iBb_1-nGt__J";
 UpdateCartCounter();
@@ -101,7 +103,7 @@ function ChangeAmmount(button , index){
 
 function AllList(){
 	jQuery.ajax({
-	url: 'https://nit.tron.net.ua/api/product/list',
+	url: 'http://'+localIP+'/products',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -176,7 +178,7 @@ function setRightInput(el){
 AllList(); // create a standart list of all products
 
 jQuery.ajax({
-	url: 'https://nit.tron.net.ua/api/category/list',
+	url: 'http://'+localIP+'/category',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -213,6 +215,7 @@ $(document).on('click' , '.cardBlock .buy-btn' , function(){
 			_cart_products.push(product);
 		}
 		else{
+
 			for (var i = 0; i< _cart_products.length;i++) {
 				if(_cart_products[i].id == product.id){
 					_cart_products[i].ammount++;
@@ -223,6 +226,7 @@ $(document).on('click' , '.cardBlock .buy-btn' , function(){
 					break;
 				}
 			}
+
 		}
 
 		UpdateCart();//updating counter on cart
@@ -278,14 +282,19 @@ $(document).on('click' , '.menu-all-btn' , function(){
 
 $(document).on('click' , '.menu-btn' , function(){
 	var category = $(this).data('category');
-	var _url = "https://nit.tron.net.ua/api/product/list/category/"+category;
+	var products_id = $(this).data('products-id').split(',').map(Number);
 	jQuery.ajax({
-		url: _url,
+		url: 'http://'+localIP+'/products',
 		method: 'get',
 		dataType: 'json',
 		success: function(json){
 			$('.product-grid').empty();
-			json.forEach(product => $('.product-grid').append(_makeProduct(product)));
+			json.forEach(function(product){
+				for(var i=0; i < products_id.length ; i++){
+					if(product.id ==  products_id[i])
+					$('.product-grid').append(_makeProduct(product))
+				}
+			});
 
 		},
 		error: function(xhr){
@@ -303,7 +312,7 @@ $(document).on('click', '.close-product-info' , function(){
 	$(this).closest('.cardBlock').find('.product-info').css('background-color','rgba(255,255,255,0)');
 	$(this).closest('.cardBlock').find('.product-info').css('pointer-events','none');
 	$(this).closest('.cardBlock').find('.close-product-info').css('visibility','hidden');
-		$(this).closest('.cardBlock').find('.product-info-text').css('overflow-y','hidden');
+	$(this).closest('.cardBlock').find('.product-info-text').css('overflow-y','hidden');
 
 });
 
@@ -340,11 +349,12 @@ $(document).on('click' , '#primary-order-btn' , function(){
 		var _name = $('#inputName').val()+" "+$('#inputSurname').val();
 		var _phone = $('#inputPhone').val();
 		var _email = $('#inputEmail').val();
-		var _post = `name=${_name}&email=${_email}&phone=${_phone}`;
+
 		var counter = 0;
+		var _products = '';
 		for(var i = 0; i < _cart_products.length ; i++){
 			if(_cart_products[i].ammount > 0){
-				_post+=`&products[${_cart_products[i].id}]=${_cart_products[i].ammount}`;
+				_products+=`&products[${_cart_products[i].id}]=${_cart_products[i].ammount}`;
 				counter++;
 			}
 		}
@@ -354,22 +364,36 @@ $(document).on('click' , '#primary-order-btn' , function(){
 
 			console.log("0 ammount of products!!!");
 			return;
-		}
+		};
+
+		var _post = {
+				name: _name,
+                phone: _phone,
+                email: _email,
+                products: _products
+		};
  
-		_post+=`&token=ngz_9ff2iBb_1-nGt__J`;
 		console.log(_post);
 
-		$.ajax({
-		    url: 'https://nit.tron.net.ua/api/order/add',
+		jQuery.ajax({
+		    url: 'http://'+localIP+'/purchase',
 		    method: 'POST',
-		    data:_post,
 		    dataType: 'json',
+		    data: JSON.stringify(_post),
+		    contentType: "application/json",
+            cache: false,
+            timeout: 5000,
 		    success: function(json){
 		        console.log(json);
+		        console.log("Created");
 		        _cart_products = [];
 		        window.localStorage.setItem('cart_products' , _cart_products);
 		        UpdateCart();
 		    },
+		    error: function(xhr){
+		    	console.log("Not Created");
+				alert("An error occured: " + xhr.status + " " + xhr.statusText);
+			},
 		});
 
 		

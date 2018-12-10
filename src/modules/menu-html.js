@@ -1,10 +1,10 @@
 let _makeHtml = ({
 	id,
-	name,
-	description
+	category_name,
+	category_products_id
 }) => {
 
-	let $product = $(`<a class = "btn menu-btn row col" href = "#" data-category = "${id}">${name}</a> `);
+	let $product = $(`<a class = "btn menu-btn row col" href = "#" data-category = "${id}" data-products-id = "${category_products_id}">${category_name}</a> `);
 
 	return $product;
 };
