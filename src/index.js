@@ -11,6 +11,8 @@ let _makeProduct = require('./modules/product-html');
 let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
 // let _con = require('./modules/db_c');
+let _makeTable = require('./modules/table-html');
+let _makeCategoryTable = require('./modules/category-table-html');
 
 var localIP = "192.168.31.21:8080";
 var _cart_products = [];
@@ -171,10 +173,6 @@ function setRightInput(el){
 	}
 }
 
-
-
-
-
 AllList(); // create a standart list of all products
 
 jQuery.ajax({
@@ -308,6 +306,7 @@ $(document).on('click' , '.menu-btn' , function(){
 });
 
 $(document).on('click', '.close-product-info' , function(){
+
 	$(this).closest('.cardBlock').find('.product-info').css('color','rgba(0,0,0,0)');
 	$(this).closest('.cardBlock').find('.product-info').css('background-color','rgba(255,255,255,0)');
 	$(this).closest('.cardBlock').find('.product-info').css('pointer-events','none');
@@ -405,6 +404,59 @@ $(document).on('click' , '#primary-order-btn' , function(){
 
 });
 
+function CorrectLogin (){
+	var login= $('#logininput').val();
+	var pass= $('#passwordinput').val();
+	//Test input -------------------------------
+	if(login=="login"&&pass=="pass")return true;
+	return false;
+};
+jQuery.ajax({
+	url: 'https://nit.tron.net.ua/api/product/list',
+	method: 'get',
+	dataType: 'json',
+	success: function(json){
+		json.forEach(product => $('.product-table').append(_makeTable(product)));
+	},
+	error: function(xhr){
+		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+	},
+	
+});
+jQuery.ajax({
+	url: 'https://nit.tron.net.ua/api/category/list',
+	method: 'get',
+	dataType: 'json',
+	success: function(json){
+		json.forEach(product => $('.category-table').append(_makeCategoryTable(product)));
+	},
+	error: function(xhr){
+		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+	},
+	
+});
+
+
+$(document).on('click' , '#sign-in' , function(){
+	if(CorrectLogin()){
+		$('.product-grid').empty();
+		$('.admin-panel').removeClass('d-none');
+		$( "#adminmodal" ).remove();
+		$( "#cart-button" ).before( `<button class="btn alert-danger admin-sign-out">
+				Sign Out
+			</button> `);
+	}
+	
+});
+
+$(document).on('click' , '.admin-sign-out' , function(){
+	AllList();
+	$('.admin-panel').addClass('d-none');
+	$( "#cart-button" ).before( `<button class="btn " id="adminmodal" data-toggle="modal" data-target="#adminModal">
+				Login
+			</button> `);
+	$( ".admin-sign-out" ).remove();
+});
 
 $(document).on('click' , '#secondary-order-btn' , function(){
 	if(orderActive){
