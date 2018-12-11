@@ -10,7 +10,6 @@ window.$ = $;
 let _makeProduct = require('./modules/product-html');
 let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
-// let _con = require('./modules/db_c');
 let _makeTable = require('./modules/table-html');
 let _makeCategoryTable = require('./modules/category-table-html');
 
@@ -128,25 +127,21 @@ function CheckInput(){
 	
 	if($('#inputPhone').val().length != 14){
 		res = false;
-		console.log('wrong');
 		setWrongInput('#inputPhone');
 	}else setRightInput('#inputPhone');
 
 	if(!validateEmail($('#inputEmail').val())){
 		res = false;
-		console.log('wrong');
 		setWrongInput('#inputEmail');
 	}else setRightInput('#inputEmail');
 
 	if($('#inputName').val() == ""){
 		res = false;
-		console.log('wrong');
 		setWrongInput('#inputName');
 	}else setRightInput('#inputName');
 
 	if($('#inputSurname').val() == ""){
 		res = false;
-		console.log('wrong');
 		setWrongInput('#inputSurname');
 	}else setRightInput('#inputSurname');
 
@@ -160,7 +155,6 @@ function setWrongInput(el){
 			$el.addClass('is-invalid').removeClass('is-valid');
 		else $el.addClass('is-invalid');
 
-	console.log($el.hasClass('is-invalid'))
 	}
 }
 
@@ -213,7 +207,6 @@ $(document).on('click' , '.cardBlock .buy-btn' , function(){
 			_cart_products.push(product);
 		}
 		else{
-
 			for (var i = 0; i< _cart_products.length;i++) {
 				if(_cart_products[i].id == product.id){
 					_cart_products[i].ammount++;
@@ -224,7 +217,6 @@ $(document).on('click' , '.cardBlock .buy-btn' , function(){
 					break;
 				}
 			}
-
 		}
 
 		UpdateCart();//updating counter on cart
@@ -365,34 +357,27 @@ $(document).on('click' , '#primary-order-btn' , function(){
 			return;
 		};
 
+ 
 		var _post = {
 				name: _name,
                 phone: _phone,
                 email: _email,
                 products: _products
 		};
- 
-		console.log(_post);
 
-		jQuery.ajax({
-		    url: 'http://'+localIP+'/purchase',
+		$.ajax({
+		    url: 'http://'+localIP+'/purchase/add',
 		    method: 'POST',
 		    dataType: 'json',
-		    data: JSON.stringify(_post),
+		    data:JSON.stringify(_post),
 		    contentType: "application/json",
             cache: false,
             timeout: 5000,
 		    success: function(json){
-		        console.log(json);
-		        console.log("Created");
 		        _cart_products = [];
 		        window.localStorage.setItem('cart_products' , _cart_products);
 		        UpdateCart();
 		    },
-		    error: function(xhr){
-		    	console.log("Not Created");
-				alert("An error occured: " + xhr.status + " " + xhr.statusText);
-			},
 		});
 
 		
@@ -411,8 +396,9 @@ function CorrectLogin (){
 	if(login=="login"&&pass=="pass")return true;
 	return false;
 };
+
 jQuery.ajax({
-	url: 'https://nit.tron.net.ua/api/product/list',
+	url: 'http://'+localIP+'/products',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -424,7 +410,7 @@ jQuery.ajax({
 	
 });
 jQuery.ajax({
-	url: 'https://nit.tron.net.ua/api/category/list',
+	url: 'http://'+localIP+'/category',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -468,4 +454,49 @@ $(document).on('click' , '#secondary-order-btn' , function(){
 	}else{
 		$('#cartModal').modal('toggle');
 	}
+});
+
+$(document).on('click' , '#create-product-btn' , function(){
+
+
+		var _name = $('#create-product-name').val();
+		var _description = $('#create-product-description').val();
+		var _image_url = $('#create-product-image').val();
+		var _price = $('#create-product-price').val();
+		var _special_price = $('#create-product-special-price').val();
+
+		var _post = {
+				name: _name,
+                description: _description,
+                image_url: _image_url,
+                price: _price,
+                special_price : _special_price
+		};
+
+		console.log(_post);
+
+		$.ajax({
+		    url: 'http://'+localIP+'/products/add',
+		    method: 'POST',
+		    dataType: 'json',
+		    data:JSON.stringify(_post),
+		    contentType: "application/json",
+            cache: false,
+            timeout: 5000,
+		    success: function(json){
+		        console.log(json);
+		    },
+		});
+});
+
+$(document).on('click' , '.product-table-delete-btn' , function(){
+	var _id = $(this).closest('[data-product-id]').data('product-id');
+
+	$.ajax({
+		    url: 'https://'+localIP+'/products/delete/:'+_id,
+		    method: 'DELETE',
+		    success: function(result){
+		        
+		    },
+		});
 });

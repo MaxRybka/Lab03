@@ -79,32 +79,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- Login Panel -->
-	<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-	  <div class="modal-dialog modal-dialog-centered" role="document">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h5 class="modal-title" id="exampleModalCenterTitle">Login</h5>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">&times;</span>
-	        </button>
-	      </div>
-	      <div class="modal-body">
-	      	<div class="form-group">
-		      <label for="exampleDropdownFormEmail1">Login</label>
-		      <input type="email" class="form-control" id="inputLogin" placeholder="email@example.com">
-		    </div>
-		    <div class="form-group">
-		      <label for="exampleDropdownFormPassword1">Password</label>
-		      <input type="password" class="form-control" id="inputPassword" placeholder="Password">
-		    </div>
-		     <button type="submit" class="btn btn-primary " id = "submit-login-button">Sign in</button>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-	      </div>
-	    </div>
-	  </div>
 	<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
 	 aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -161,7 +135,7 @@
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<label>Product name</label>
-						<input type="text" class="form-control" placeholder="Name" required>
+						<input type="text" class="form-control" id="create-product-name" placeholder="Name" required>
 					</div>
 					<div class="form-group col-md-3">
 						<label>Product price</label>
@@ -171,21 +145,21 @@
 								  Sale product
 							</label>
 						</div>
-						<input type="number" class="form-control" placeholder="Price" min="0" max="100000" required>
+						<input type="number" class="form-control" id="create-product-price" placeholder="Price" min="0" max="100000" required>
 					</div>
 					<div class="form-group col-md-3">
 						<div class="collapse" id="collapsePrice">
 							<label>Special price</label>
-							<input type="number" class="form-control" placeholder="Special price" min="0" max="100000">
+							<input type="number" class="form-control" id="create-product-special-price" placeholder="Special price" min="0" max="100000">
 						</div>
 					</div>
 					<div class="form-group col-md-9">
 						<label>Choose photo of product</label>
-						<input type="file" class="form-control-file" required>
+						<input type="file" class="form-control-file" id="create-product-image" required>
 					</div>
 					<div class="form-group col-md-9">
 						<label>Product description</label>
-						<textarea class="form-control" rows="3"></textarea>
+						<textarea class="form-control" id="create-product-description" rows="3"></textarea>
 					</div>
 					<!-- <div class=" category-row col-md-9">
 						<div class="form-check col-md-4">
@@ -208,7 +182,7 @@
 					    </div>
 					</div> -->
 				</div>
-				<button type="submit" class="btn btn-success">Add</button>
+				<button type="submit" class="btn btn-success" id ="create-product-btn">Add</button>
 			</div>
 				<h4>Categories</h4>
 				<div class="table-responsive tablesize">
@@ -240,7 +214,7 @@
 						<textarea class="form-control" rows="3"></textarea>
 					</div>
 				</div>
-				<button type="submit" class="btn btn-success">Add</button>
+				<button type="submit" class="btn btn-success " >Add</button>
 			</div>
 		</div>
 	</div>

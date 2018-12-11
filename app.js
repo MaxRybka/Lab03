@@ -51,11 +51,41 @@ app.get('/category' , function(req,res){
 	});
 });
 
-//insert purchase
-app.post('/purchase' , function(req,res){
+//adding purchase information
+app.post('/purchase/add' , function(req,res){
 	let emp = req.body;
-	console.log(req.body.name);
 	var sql = "INSERT INTO purchase (name, phone , email , products)  VALUES (?,?,?,?)";
+	con.query(sql,[emp.name,emp.phone,emp.email,emp.products], function(err,rows,fields){
+		if(err) console.log(err);
+		else res.send(rows);
+	});
+});
+
+
+//adding product to database
+app.post('/products/add' , function(req,res){
+	let emp = req.body;
+	var sql = "INSERT INTO products (name, description , image_url , price , special_price)  VALUES (?,?,?,?,?)";
+	con.query(sql,[emp.name,emp.description , emp.image_url , emp.price , emp.special_price], function(err,rows,fields){
+		if(err) console.log(err);
+		else res.send(rows);
+	});
+});
+
+//deleteing product
+app.delete('/products/delete/:id', function(req,res){
+	// let emp = req.body;
+	console.log("Deleting product : " + req.params.id);
+	var sql = "DELETE FROM products WHERE id = "+req.params.id;
+	con.query(sql, function(err, result){
+		if(err) console.log(err);
+		else console.log("Success");
+	});
+});
+
+app.post('/products/edit/:id' , function(req,res){
+	let emp = req.body;
+	var sql = "UPDATE products SET ? WHERE id = ";
 	con.query(sql,[emp.name,emp.phone,emp.email,emp.products], function(err,rows,fields){
 		if(err) console.log(err);
 		else res.send(rows);

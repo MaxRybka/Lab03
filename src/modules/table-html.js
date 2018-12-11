@@ -13,7 +13,7 @@ let _makeHtml = ({
 	if(special_price==null)special_price="-";
 	$product.append($(` <td></td>`).text(special_price));
 	$product.append($(`<td><button type="button" class="btn btn-primary " >Change</button></td>`));	
-	$product.append($(` <td><button type="button" class="btn btn-danger ">Delete</button></td>`))
+	$product.append($(` <td><button type="button" class="btn btn-danger product-table-delete-btn ">Delete</button></td>`))
 	return $product;
 };
 
