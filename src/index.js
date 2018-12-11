@@ -12,6 +12,7 @@ let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
 let _makeTable = require('./modules/table-html');
 let _makeCategoryTable = require('./modules/category-table-html');
+let _makeCategoryList = require('./modules/category-list-html');
 
 var localIP = "192.168.31.21:8080";
 var _cart_products = [];
@@ -104,7 +105,7 @@ function ChangeAmmount(button , index){
 
 function AllList(){
 	jQuery.ajax({
-	url: 'http://'+localIP+'/products',
+	url: 'https://nit.tron.net.ua/api/product/list',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -170,7 +171,7 @@ function setRightInput(el){
 AllList(); // create a standart list of all products
 
 jQuery.ajax({
-	url: 'http://'+localIP+'/category',
+	url: 'https://nit.tron.net.ua/api/category/list',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -270,21 +271,43 @@ $(document).on('click' , '.menu-all-btn' , function(){
 	menuOff();
 });
 
+// $(document).on('click' , '.menu-btn' , function(){
+// 	var category = $(this).data('category');
+// 	var products_id = $(this).data('products-id').split(',').map(Number);
+// 	jQuery.ajax({
+// 		url: 'https://nit.tron.net.ua/api/product/list',
+
+// 		method: 'get',
+// 		dataType: 'json',
+// 		success: function(json){
+// 			$('.product-grid').empty();
+// 			json.forEach(function(product){
+// 				for(var i=0; i < products_id.length ; i++){
+// 					if(product.id ==  products_id[i])
+// 					$('.product-grid').append(_makeProduct(product))
+// 				}
+// 			});
+
+// 		},
+// 		error: function(xhr){
+// 			alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 		},
+		
+// 	});
+
+// 	menuOff();
+
+// });
 $(document).on('click' , '.menu-btn' , function(){
-	var category = $(this).data('category');
-	var products_id = $(this).data('products-id').split(',').map(Number);
+	var category = $(this).data('product-id');
+	var _url = "https://nit.tron.net.ua/api/product/list/category/"+category;
 	jQuery.ajax({
-		url: 'http://'+localIP+'/products',
+		url: _url,
 		method: 'get',
 		dataType: 'json',
 		success: function(json){
 			$('.product-grid').empty();
-			json.forEach(function(product){
-				for(var i=0; i < products_id.length ; i++){
-					if(product.id ==  products_id[i])
-					$('.product-grid').append(_makeProduct(product))
-				}
-			});
+			json.forEach(product => $('.product-grid').append(_makeProduct(product)));
 
 		},
 		error: function(xhr){
@@ -398,7 +421,7 @@ function CorrectLogin (){
 };
 
 jQuery.ajax({
-	url: 'http://'+localIP+'/products',
+	url: 'https://nit.tron.net.ua/api/product/list',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
@@ -410,11 +433,23 @@ jQuery.ajax({
 	
 });
 jQuery.ajax({
-	url: 'http://'+localIP+'/category',
+	url: 'https://nit.tron.net.ua/api/category/list',
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
 		json.forEach(product => $('.category-table').append(_makeCategoryTable(product)));
+	},
+	error: function(xhr){
+		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+	},
+	
+});
+jQuery.ajax({
+	url: 'https://nit.tron.net.ua/api/category/list',
+	method: 'get',
+	dataType: 'json',
+	success: function(json){
+		json.forEach(product => $('.category-list').append(_makeCategoryList(product)));
 	},
 	error: function(xhr){
 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
