@@ -272,11 +272,10 @@ $(document).on('click' , '.menu-all-btn' , function(){
 });
 
 $(document).on('click' , '.menu-btn' , function(){
-	//var category = $(this).data('category');
-	//var products_id = $(this).data('products-id').split(',').map(Number);
+	var category = $(this).data('product-id');
+	var _url = "https://nit.tron.net.ua/api/product/list/category/"+category;
 	jQuery.ajax({
-		url: 'https://nit.tron.net.ua/api/product/list',
-
+		url: _url,
 		method: 'get',
 		dataType: 'json',
 		success: function(json){
@@ -426,6 +425,7 @@ jQuery.ajax({
 	method: 'get',
 	dataType: 'json',
 	success: function(json){
+		json.forEach(product => $(console.log(product)));
 		json.forEach(product => $('.category-list').append(_makeCategoryList(product)));
 	},
 	error: function(xhr){
