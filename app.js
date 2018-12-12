@@ -1,6 +1,9 @@
 var express = require("express"),
 	app = express(),
-	// bodyParser = require("body-parser"),
+	http = require('http'),
+    path = require('path'),
+    multer = require('multer'),
+	bodyParser=require("body-parser"),
 	mysql= require('mysql'),
 	jsonParser = express.json();
 
@@ -12,6 +15,8 @@ app.use(express.static(__dirname) , function(req, res, next) {
   next();
 });
 
+const DIR = './uploads';
+
 
 var con = mysql.createConnection({
 	host : 'localhost',
@@ -19,6 +24,25 @@ var con = mysql.createConnection({
 	password : 'postgres',
 	database: 'database'
 });
+
+let storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+      callback(null, DIR);
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+let upload = multer({storage: storage})
+
+
+app.set('port', process.env.PORT || 8080);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 con.connect(function(err){
 	if(err) console.log(err);
@@ -63,20 +87,40 @@ app.post('/purchase/add' , function(req,res){
 
 
 //adding product to database
-app.post('/products/add' , function(req,res){
+app.post('/products/add' ,upload.single('image'), function(req,res){
 	let emp = req.body;
-	var sql = "INSERT INTO products (name, description , image_url , price , special_price)  VALUES (?,?,?,?,?)";
-	con.query(sql,[emp.name,emp.description , emp.image_url , emp.price , emp.special_price], function(err,rows,fields){
+	var sql = "INSERT INTO products (name, description , image , price , special_price)  VALUES (?,?,?,?,?)";
+
+	con.query(sql,[emp.name,emp.description , emp.image , emp.price , emp.special_price], function(err,rows,fields){
 		if(err) console.log(err);
 		else res.send(rows);
 	});
 });
 
+app.post('/upload-image',upload.single('image'), function (req, res) {
+  message : "Error! in image upload."
+    if (!req.file) {
+        console.log("No file received");
+          message = "Error! in image upload."
+        res.render('index',{message: message, status:'danger'});
+    
+      } else {
+        console.log('file received');
+        console.log(req);
+        var sql = "INSERT INTO `file`(`name`, `type`, `size`) VALUES ('" + req.file.filename + "', '"+req.file.mimetype+"', '"+req.file.size+"')";
+        con.query(sql, function(err, result) {
+           console.log('inserted data');
+        });
+        message = "Successfully! uploaded";
+        res.render('index',{message: message, status:'success'});
+
+      }
+});
+
 //deleteing product
-app.delete('/products/delete/:id', function(req,res){
-	// let emp = req.body;
+app.post('/products/delete/:id', function(req,res){
 	console.log("Deleting product : " + req.params.id);
-	var sql = "DELETE FROM products WHERE id = "+req.params.id;
+	var sql = "DELETE FROM products WHERE id = "+ req.params.id;
 	con.query(sql, function(err, result){
 		if(err) console.log(err);
 		else console.log("Success");

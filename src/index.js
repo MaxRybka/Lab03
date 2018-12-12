@@ -13,7 +13,7 @@ let _makeMenu = require('./modules/menu-html');
 let _makeTable = require('./modules/table-html');
 let _makeCategoryTable = require('./modules/category-table-html');
 
-var localIP = "192.168.31.21:8080";
+var localIP = "10.0.178.143:8080";
 var _cart_products = [];
 var _token = "ngz_9ff2iBb_1-nGt__J";
 UpdateCartCounter();
@@ -104,13 +104,14 @@ function ChangeAmmount(button , index){
 
 function AllList(){
 	jQuery.ajax({
-	url: 'http://'+localIP+'/products',
-	method: 'get',
-	dataType: 'json',
-	success: function(json){
-		$('.product-grid').empty();
-		json.forEach(product => $('.product-grid').append(_makeProduct(product)));
-		},
+		url: 'http://'+localIP+'/products',
+		method: 'get',
+		dataType: 'json',
+		success: function(json){
+			$('.product-grid').empty();
+			console.table(json);
+			json.forEach(product => $('.product-grid').append(_makeProduct(product)));
+			},
 		error: function(xhr){
 			alert("An error occured: " + xhr.status + " " + xhr.statusText);
 		},	
@@ -167,21 +168,42 @@ function setRightInput(el){
 	}
 }
 
+function UpdateProductTable(){
+	jQuery.ajax({
+		url: 'http://'+localIP+'/products',
+		method: 'get',
+		dataType: 'json',
+		success: function(json){
+			json.forEach(product => $('.product-table').append(_makeTable(product)));
+		},
+		error: function(xhr){
+			alert("An error occured: " + xhr.status + " " + xhr.statusText);
+		},
+		
+	});
+}
+
+function UpdateEl(_url , el , make){ // get information from db and updates el
+	var $el = $(el);
+	$el.empty();
+	jQuery.ajax({
+		url: _url,
+		method: 'get',
+		dataType: 'json',
+		success: function(json){
+			json.forEach(product => $el.append(make(product)));
+		},
+		error: function(xhr){
+			alert("An error occured: " + xhr.status + " " + xhr.statusText);
+		},
+		
+	});
+}
+
+UpdateEl('http://'+localIP+'/products' , '.product-table' , _makeTable); // updating product table
+UpdateEl('http://'+localIP+'/category' , '#menu' , _makeMenu); // updating menu categories
+UpdateEl('http://'+localIP+'/category' , '.category-table' ,  _makeCategoryTable);
 AllList(); // create a standart list of all products
-
-jQuery.ajax({
-	url: 'http://'+localIP+'/category',
-	method: 'get',
-	dataType: 'json',
-	success: function(json){
-		json.forEach(product => $('#menu').append(_makeMenu(product)));
-
-	},
-	error: function(xhr){
-		alert("An error occured: " + xhr.status + " " + xhr.statusText);
-	},
-	
-});
 
 $(document).on('click' , '.cart-minus-button', function(){
 	ChangeAmmount($(this) , -1);
@@ -397,31 +419,6 @@ function CorrectLogin (){
 	return false;
 };
 
-jQuery.ajax({
-	url: 'http://'+localIP+'/products',
-	method: 'get',
-	dataType: 'json',
-	success: function(json){
-		json.forEach(product => $('.product-table').append(_makeTable(product)));
-	},
-	error: function(xhr){
-		alert("An error occured: " + xhr.status + " " + xhr.statusText);
-	},
-	
-});
-jQuery.ajax({
-	url: 'http://'+localIP+'/category',
-	method: 'get',
-	dataType: 'json',
-	success: function(json){
-		json.forEach(product => $('.category-table').append(_makeCategoryTable(product)));
-	},
-	error: function(xhr){
-		alert("An error occured: " + xhr.status + " " + xhr.statusText);
-	},
-	
-});
-
 
 $(document).on('click' , '#sign-in' , function(){
 	if(CorrectLogin()){
@@ -461,19 +458,19 @@ $(document).on('click' , '#create-product-btn' , function(){
 
 		var _name = $('#create-product-name').val();
 		var _description = $('#create-product-description').val();
-		var _image_url = $('#create-product-image').val();
+		var _image = $('#create-product-image')[0];
 		var _price = $('#create-product-price').val();
 		var _special_price = $('#create-product-special-price').val();
 
 		var _post = {
 				name: _name,
                 description: _description,
-                image_url: _image_url,
+                image: _image,
                 price: _price,
                 special_price : _special_price
 		};
 
-		console.log(_post);
+		console.log($('#create-product-image')[0].files[0]);
 
 		$.ajax({
 		    url: 'http://'+localIP+'/products/add',
@@ -487,16 +484,22 @@ $(document).on('click' , '#create-product-btn' , function(){
 		        console.log(json);
 		    },
 		});
+
+
+		UpdateEl('http://'+localIP+'/products' , '.product-table', _makeTable); // updating product table
 });
 
 $(document).on('click' , '.product-table-delete-btn' , function(){
-	var _id = $(this).closest('[data-product-id]').data('product-id');
+	var id = $(this).closest('[data-product-id]').data('product-id');
 
 	$.ajax({
-		    url: 'https://'+localIP+'/products/delete/:'+_id,
-		    method: 'DELETE',
+		    url: 'http://'+localIP+'/products/delete/'+id,
+		    type: 'POST',
+		    data: {_method: 'delete', _id :id},
 		    success: function(result){
 		        
 		    },
-		});
+	});
+
+	UpdateEl('http://'+localIP+'/products' , '.product-table', _makeTable); // updating product table
 });
