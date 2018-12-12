@@ -1,11 +1,11 @@
 let _makeHtml = ({
 	id,
-	name,
+	category_name,
 	description
 }) => {
-	let $product = $(`<div class="form-check" data-product-id="${id}" data-name="${name}" data-product-description="${description}">
+	let $product = $(`<div class="form-check" data-product-id="${id}" data-name="${category_name}" data-product-description="${description}">
 		<input class="form-check-input" type="checkbox" id="gridCheck">
-		<label class="form-check-label" for="gridCheck">${name}</label></div>`);
+		<label class="form-check-label" for="gridCheck">${category_name}</label></div>`);
 	return $product;
 };
  module.exports = _makeHtml; 
