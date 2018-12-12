@@ -3,12 +3,12 @@ let _makeHtml = ({
 	name,
 	description
 }) => {
-	let $product = $(`<tr data-product-id="${id}" data-name="${name}" data-product-description="${description}">`);
+	let $product = $(`<tr data-product-id="${id}" data-name="${name}" data-category-description="${description}">`);
 	$product.append($(` <th scope="row"></th>`).text(id));
 	$product.append($(` <td></td>`).text(name));
 	$product.append($(` <td></td>`).text(description));
-	$product.append($(`<td><button type="button" class="btn btn-primary " >Change</button></td>`));	
-	$product.append($(` <td><button type="button" class="btn btn-danger ">Delete</button></td>`))
+	$product.append($(`<td class="tablerow"><div class="col-md-6 butt-table"><button type="button" class="btn btn-primary change-categ-butt" data-toggle="modal" data-target="#editmodalcateg">Change</button></div>
+		<div class="col-md-6 butt-table"><button type="button" class=" btn btn-danger product-table-delete-btn ">Delete</button></div></td> `));	
 	return $product;
 };
 

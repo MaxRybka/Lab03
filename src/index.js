@@ -12,6 +12,9 @@ let _makeCartProducts = require('./modules/cart-products-html');
 let _makeMenu = require('./modules/menu-html');
 let _makeTable = require('./modules/table-html');
 let _makeCategoryTable = require('./modules/category-table-html');
+let _makeCategoryList = require('./modules/category-list-html');
+let _makeProductList = require('./modules/product-list-html');
+
 
 var localIP = "10.0.178.143:8080";
 var _cart_products = [];
@@ -111,10 +114,7 @@ function AllList(){
 			$('.product-grid').empty();
 			console.table(json);
 			json.forEach(product => $('.product-grid').append(_makeProduct(product)));
-			},
-		error: function(xhr){
-			alert("An error occured: " + xhr.status + " " + xhr.statusText);
-		},	
+		},
 	});
 }
 
@@ -183,6 +183,7 @@ function UpdateProductTable(){
 	});
 }
 
+
 function UpdateEl(_url , el , make){ // get information from db and updates el
 	var $el = $(el);
 	$el.empty();
@@ -203,7 +204,49 @@ function UpdateEl(_url , el , make){ // get information from db and updates el
 UpdateEl('http://'+localIP+'/products' , '.product-table' , _makeTable); // updating product table
 UpdateEl('http://'+localIP+'/category' , '#menu' , _makeMenu); // updating menu categories
 UpdateEl('http://'+localIP+'/category' , '.category-table' ,  _makeCategoryTable);
+UpdateEl( 'http://'+localIP+'/category', '.category-list' ,_makeCategoryList);
+UpdateEl('http://'+localIP+'/products' , '.product-list' , _makeProductList);
+// jQuery.ajax({
+// 	url: 'https://nit.tron.net.ua/api/category/list',
+// 	method: 'get',
+// 	dataType: 'json',
+// 	success: function(json){
+// 		// json.forEach(product => $(console.log(product)));
+// 		json.forEach(product => $('.category-list').append(_makeCategoryList(product)));
+// 	},
+// 	error: function(xhr){
+// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 	},
+	
+// });
+// jQuery.ajax({
+// 	url: 'https://nit.tron.net.ua/api/product/list',
+// 	method: 'get',
+// 	dataType: 'json',
+// 	success: function(json){
+// 		json.forEach(product => $('.product-list').append(_makeProductList(product)));
+// 	},
+// 	error: function(xhr){
+// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 	},
+	
+// });
 AllList(); // create a standart list of all products
+
+// jQuery.ajax({
+// 	url: 'https://nit.tron.net.ua/api/product/list',
+// 	method: 'get',
+// 	dataType: 'json',
+// 	success: function(json){
+// 		json.forEach(product => $('#menu').append(_makeMenu(product)));
+
+// 	},
+// 	error: function(xhr){
+// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 	},
+	
+// });
+
 
 $(document).on('click' , '.cart-minus-button', function(){
 	ChangeAmmount($(this) , -1);
@@ -292,32 +335,29 @@ $(document).on('click' , '.menu-all-btn' , function(){
 	menuOff();
 });
 
-$(document).on('click' , '.menu-btn' , function(){
-	var category = $(this).data('category');
-	var products_id = $(this).data('products-id').split(',').map(Number);
-	jQuery.ajax({
-		url: 'http://'+localIP+'/products',
-		method: 'get',
-		dataType: 'json',
-		success: function(json){
-			$('.product-grid').empty();
-			json.forEach(function(product){
-				for(var i=0; i < products_id.length ; i++){
-					if(product.id ==  products_id[i])
-					$('.product-grid').append(_makeProduct(product))
-				}
-			});
+// $(document).on('click' , '.menu-btn' , function(){
+// 	var category = $(this).data('product-id');
+// 	var _url = "https://nit.tron.net.ua/api/product/list/category/"+category;
+// 	jQuery.ajax({
+// 		url: _url,
+// 		method: 'get',
+// 		dataType: 'json',
+// 		success: function(json){
+// 			$('.product-grid').empty();
+// 			json.forEach(function(product){
+// 				json.forEach(product => $('.product-grid').append(_makeProduct(product)));
+// 			});
 
-		},
-		error: function(xhr){
-			alert("An error occured: " + xhr.status + " " + xhr.statusText);
-		},
+// 		},
+// 		error: function(xhr){
+// 			alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 		},
 		
-	});
+// 	});
 
-	menuOff();
+// 	menuOff();
 
-});
+// });
 
 $(document).on('click', '.close-product-info' , function(){
 
@@ -419,6 +459,30 @@ function CorrectLogin (){
 	return false;
 };
 
+// jQuery.ajax({
+// 	url: 'https://nit.tron.net.ua/api/product/list',
+// 	method: 'get',
+// 	dataType: 'json',
+// 	success: function(json){
+// 		json.forEach(product => $('.product-table').append(_makeTable(product)));
+// 	},
+// 	error: function(xhr){
+// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 	},
+	
+// });
+// jQuery.ajax({
+// 	url: 'https://nit.tron.net.ua/api/category/list',
+// 	method: 'get',
+// 	dataType: 'json',
+// 	success: function(json){
+// 		json.forEach(product => $('.category-table').append(_makeCategoryTable(product)));
+// 	},
+// 	error: function(xhr){
+// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+// 	},
+	
+// });
 
 $(document).on('click' , '#sign-in' , function(){
 	if(CorrectLogin()){
@@ -502,4 +566,20 @@ $(document).on('click' , '.product-table-delete-btn' , function(){
 	});
 
 	UpdateEl('http://'+localIP+'/products' , '.product-table', _makeTable); // updating product table
+});
+
+$(document).on('click' , '.change-product-butt', function(){
+	$("#create-product-name").attr("value",$(this).closest('tr').data('name'));
+	$("#create-product-price").attr("value",$(this).closest('tr').data('price'));
+	$("#create-product-special-price").attr("value",$(this).closest('tr').data('special-price'));
+	$("#create-product-image").attr("value",$(this).closest('tr').data('img-url'));
+	$("#create-product-description").empty();
+	$("#create-product-description").append($(this).closest('tr').data('product-description'));
+	
+});
+$(document).on('click' , '.change-categ-butt', function(){
+	$("#create-category-name").attr("value",$(this).closest('tr').data('name'));
+	$("#create-category-description").empty();
+	console.log($(this).closest('tr').data('category-description'));
+	$("#create-category-description").append($(this).closest('tr').data('category-description'));
 });
