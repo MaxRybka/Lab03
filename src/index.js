@@ -13,6 +13,8 @@ let _makeMenu = require('./modules/menu-html');
 let _makeTable = require('./modules/table-html');
 let _makeCategoryTable = require('./modules/category-table-html');
 let _makeCategoryList = require('./modules/category-list-html');
+let _makeProductList = require('./modules/product-list-html');
+
 
 var localIP = "192.168.31.21:8080";
 var _cart_products = [];
@@ -433,6 +435,18 @@ jQuery.ajax({
 	},
 	
 });
+jQuery.ajax({
+	url: 'https://nit.tron.net.ua/api/product/list',
+	method: 'get',
+	dataType: 'json',
+	success: function(json){
+		json.forEach(product => $('.product-list').append(_makeProductList(product)));
+	},
+	error: function(xhr){
+		alert("An error occured: " + xhr.status + " " + xhr.statusText);
+	},
+	
+});
 
 $(document).on('click' , '#sign-in' , function(){
 	if(CorrectLogin()){
@@ -511,11 +525,19 @@ $(document).on('click' , '.product-table-delete-btn' , function(){
 		    },
 		});
 });
+
 $(document).on('click' , '.change-product-butt', function(){
 	$("#create-product-name").attr("value",$(this).closest('tr').data('name'));
 	$("#create-product-price").attr("value",$(this).closest('tr').data('price'));
 	$("#create-product-special-price").attr("value",$(this).closest('tr').data('special-price'));
 	$("#create-product-image").attr("value",$(this).closest('tr').data('img-url'));
-	$("#create-product-description").attr("value", $(this).closest('tr').data('product-description'));
+	$("#create-product-description").empty();
+	$("#create-product-description").append($(this).closest('tr').data('product-description'));
 	
+});
+$(document).on('click' , '.change-categ-butt', function(){
+	$("#create-category-name").attr("value",$(this).closest('tr').data('name'));
+	$("#create-category-description").empty();
+	console.log($(this).closest('tr').data('category-description'));
+	$("#create-category-description").append($(this).closest('tr').data('category-description'));
 });
