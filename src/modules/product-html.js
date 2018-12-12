@@ -1,19 +1,14 @@
 let _makeHtml = ({
 	id,
 	name,
-	image,
+	image_url,
 	description,
 	price,
 	special_price
 }) => {
-	var objurl = window.URL.createObjectURL(new Blob([image]));
-	console.log(new Blob([image]));
-	// var img = new Image();
-	// img.src = objurl;
-	// console.log(img);
 	let $product = $(`<div class="card col-xs-12 col-sm-4 col-md-3 cardBlock" 
-	 data-product-id="${id}" data-name="${name}" data-product-description="${description}" data-price="${price}" data-special-price="${special_price}">`);
-	$product.append($(`<img src="${objurl}" alt="${name}" class="card-img-top product-image">`));
+	 data-product-id="${id}" data-name="${name}" data-product-description="${description}" data-price="${price}" data-special-price="${special_price}" data-img-url="${image_url}">`);
+	$product.append($(`<img src="${image_url}" alt="${name}" class="card-img-top product-image">`));
 	$product.append($(`<div class="card-body ">`));
 	$product.append($(`<h5 class="card-title product-title">Card title</h5>`).text(name));
 	$product.append($(`<span class="card-title product-price badge">No price</span>`).text(price + "₴"));

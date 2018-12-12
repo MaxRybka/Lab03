@@ -120,31 +120,30 @@
 					<div class="form-row">
 						<div class="form-group col-md-6">
 							<label>Product name</label>
-							<input type="text" class="form-control" id="create-product-name" placeholder="Name" required>
+							<input type="text" class="form-control" id="edit-product-name" placeholder="Name" required>
 						</div>
 						<div class="form-group col-md-3">
 							<label>Product price</label>
-							<input type="number" class="form-control"  id="create-product-price" placeholder="Price" min="0" max="100000" required>
+							<input type="number" class="form-control"  id="edit-product-price" placeholder="Price" min="0" max="100000" required>
 						</div>
 						<div class="form-group col-md-3">
 								<label>Special price</label>
-								<input type="number" class="form-control" id="create-product-special-price" placeholder="Special price" min="0" max="100000">
+								<input type="number" class="form-control" id="edit-product-special-price" placeholder="Special price" min="0" max="100000">
 						</div>
 						<div class="form-group col-md-9">
-							<label>Choose photo of product</label>
-							<input type="file" class="form-control-file" id="create-product-image" required>
+							<label>Product photo url</label>
+			          	<input type="text" id="edit-product-photo"class="form-control" placeholder="Photo" required>
 						</div>
 	    
-						<div class="form-group col-md-9">
+						<!-- <div class="form-group col-md-9">
 							<label for="exampleFormControlSelect1">Select category</label>
-							<select class="category-list form-control"></select>
-						</div>
+						</div> -->
 						<div class="form-group col-md-9">
 							<label>Product description</label>
-							<textarea class="form-control"id="create-product-description" rows="3"></textarea>
+							<textarea class="form-control"id="edit-product-description" rows="3"></textarea>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary " >Save</button>
+					<button type="submit" class="btn btn-primary " id="product-save-btn" >Save</button>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -162,24 +161,24 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body" id = "category-edit-field" data-cat-id = '0'>
 					<div class="form-row">
 					<div class="form-group col-md-6">
 						<label>Category name</label>
-						<input type="text" id="create-category-name"class="form-control" placeholder="Name" required>
+						<input type="text" class="form-control" id="edit-product-name" placeholder="Name" required="">
 					</div>
 					<div class="form-group col-md-9 " >
-						<label for="exampleFormControlSelect1" class=""data-toggle="collapse" data-target="#collapseProdList" aria-expanded="false"  aria-controls="collapseProdList">Select product</label>
+						<label for="exampleFormControlSelect1" class="" data-toggle="collapse" data-target="#collapseProdList" aria-expanded="false"  aria-controls="collapseProdList">Select product</label>
  						<div class="product-list form-group col-md-9  collapse" id="collapseProdList" >	 
 						</div>
 					</div>
 					<div class="form-group col-md-9">
 						<label>Category description</label>
-						 <textarea class="form-control"aria-label="With textarea" id="create-category-description"></textarea>
+						 <textarea class="form-control"aria-label="With textarea" id="edit-category-description"></textarea>
 					</div>
 
 				</div>
-				<button type="submit" class="btn btn-primary " >Save</button>
+				<button type="submit" class="btn btn-primary " id = "category-save-btn">Save</button>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -233,15 +232,15 @@
 							<input type="number" class="form-control" id="create-product-special-price" placeholder="Special price" min="0" max="100000">
 						</div>
 					</div>
-					<div class="form-group col-md-9">
-						<label>Choose photo of product</label>
-						<input type="file" class="form-control-file" id="create-product-image" accept="image/*" required>
-					</div>
-					<div class="form-group col-md-9 " >
+					<div class="form-group col-md-6">
+			          <label>Product photo url</label>
+			          <input type="text" id="create-product-photo"class="form-control" placeholder="Photo" required>
+			        </div>
+					<!-- <div class="form-group col-md-9 " >
 						<label for="exampleFormControlSelect1" class=""data-toggle="collapse" data-target="#collapseCatList" aria-expanded="false"  aria-controls="collapseCatList">Select category</label>
  						<div class="category-list form-group col-md-9  collapse" id="collapseCatList" >	 
 						</div>
-					  </div>
+					  </div> -->
 
 					<div class="form-group col-md-9">
 						<label>Product description</label>
@@ -274,7 +273,7 @@
 				<div class="form-row">
 					<div class="form-group col-md-6">
 						<label>Category name</label>
-						<input type="text" class="form-control" placeholder="Name" required>
+						<input type="text" class="form-control" id = "create-category-name" placeholder="Name" required>
 					</div>
 					<div class="form-group col-md-9 " >
 						<label for="exampleFormControlSelect1" class=""data-toggle="collapse" data-target="#collapseProdList" aria-expanded="false"  aria-controls="collapseProdList">Select product</label>
@@ -283,14 +282,34 @@
 					</div>
 					<div class="form-group col-md-9">
 						<label>Category description</label>
-						<textarea class="form-control" rows="3"></textarea>
+						<textarea class="form-control" id = "create-category-description" rows="3"></textarea>
 					</div>
 
 				</div>
-				<button type="submit" class="btn btn-success " >Add</button>
+				<button type="submit" class="btn btn-success " id="category-add-btn">Add</button>
 			</div>
+			<div class="table-responsive tablesize">
+             <table class="table">
+	            <thead>
+	              <tr>
+	                <th scope="col">Id</th>
+	                <th scope="col">Name</th>
+	                <th scope="col">Email</th>
+	                <th scope="col">Phone</th>
+	                <th scope="col">products</th>
+	              </tr>
+	            </thead>
+            <tbody class="table-body order-table">
+              
+            </tbody>
+          </table>
+        </div>
 		</div>
+
+
 	</div>
+
+
 
 	<div class="container products-container">
 		<div class="row justify-content-md-center product-grid">

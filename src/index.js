@@ -14,11 +14,15 @@ let _makeTable = require('./modules/table-html');
 let _makeCategoryTable = require('./modules/category-table-html');
 let _makeCategoryList = require('./modules/category-list-html');
 let _makeProductList = require('./modules/product-list-html');
+let _makeOrderTable = require('./modules/order-table-html');
 
 
 var localIP = "10.0.178.143:8080";
 var _cart_products = [];
 var _token = "ngz_9ff2iBb_1-nGt__J";
+var res=[];
+var resproducts=[];
+
 UpdateCartCounter();
 window.localStorage.setItem('cart_products' , JSON.stringify(_cart_products));
 
@@ -186,7 +190,7 @@ function UpdateProductTable(){
 
 function UpdateEl(_url , el , make){ // get information from db and updates el
 	var $el = $(el);
-	$el.empty();
+	if(el != '#menu') $el.empty();
 	jQuery.ajax({
 		url: _url,
 		method: 'get',
@@ -201,10 +205,11 @@ function UpdateEl(_url , el , make){ // get information from db and updates el
 	});
 }
 
+UpdateEl('http://'+localIP+'/orders' , '.order-table' , _makeOrderTable);
 UpdateEl('http://'+localIP+'/products' , '.product-table' , _makeTable); // updating product table
 UpdateEl('http://'+localIP+'/category' , '#menu' , _makeMenu); // updating menu categories
 UpdateEl('http://'+localIP+'/category' , '.category-table' ,  _makeCategoryTable);
-UpdateEl( 'http://'+localIP+'/category', '.category-list' ,_makeCategoryList);
+// UpdateEl( 'http://'+localIP+'/category' , '.category-list' ,_makeCategoryList);
 UpdateEl('http://'+localIP+'/products' , '.product-list' , _makeProductList);
 // jQuery.ajax({
 // 	url: 'https://nit.tron.net.ua/api/category/list',
@@ -335,29 +340,32 @@ $(document).on('click' , '.menu-all-btn' , function(){
 	menuOff();
 });
 
-// $(document).on('click' , '.menu-btn' , function(){
-// 	var category = $(this).data('product-id');
-// 	var _url = "https://nit.tron.net.ua/api/product/list/category/"+category;
-// 	jQuery.ajax({
-// 		url: _url,
-// 		method: 'get',
-// 		dataType: 'json',
-// 		success: function(json){
-// 			$('.product-grid').empty();
-// 			json.forEach(function(product){
-// 				json.forEach(product => $('.product-grid').append(_makeProduct(product)));
-// 			});
+$(document).on('click' , '.menu-btn' , function(){
+	var category = $(this).data('category');
+	var products_id = $(this).data('products-id').split(',').map(Number);
+	jQuery.ajax({
+		url: 'http://'+localIP+'/products',
+		method: 'get',
+		dataType: 'json',
+		success: function(json){
+			$('.product-grid').empty();
+			json.forEach(function(product){
+				for(var i=0; i < products_id.length ; i++){
+					if(product.id ==  products_id[i])
+					$('.product-grid').append(_makeProduct(product))
+				}
+			});
 
-// 		},
-// 		error: function(xhr){
-// 			alert("An error occured: " + xhr.status + " " + xhr.statusText);
-// 		},
+		},
+		error: function(xhr){
+			alert("An error occured: " + xhr.status + " " + xhr.statusText);
+		},
 		
-// 	});
+	});
 
-// 	menuOff();
+	menuOff();
 
-// });
+});
 
 $(document).on('click', '.close-product-info' , function(){
 
@@ -442,6 +450,8 @@ $(document).on('click' , '#primary-order-btn' , function(){
 		    },
 		});
 
+		UpdateEl('http://'+localIP+'/orders' , '.order-table' , _makeOrderTable);
+
 		
 	}else {
 		//if wrong input 
@@ -452,37 +462,34 @@ $(document).on('click' , '#primary-order-btn' , function(){
 });
 
 function CorrectLogin (){
-	var login= $('#logininput').val();
-	var pass= $('#passwordinput').val();
+	var _login= $('#logininput').val();
+	var _pass= $('#passwordinput').val();
 	//Test input -------------------------------
-	if(login=="login"&&pass=="pass")return true;
-	return false;
-};
+	var res = false;
+	$.ajax({
+	    url: 'http://'+localIP+'/login',
+	    method: 'GET',
+	    async: false,
+	    data:{
+			login : _login,
+			pass : _pass
+		},
+		timeout: 10000,
+	    success: function(json){
+	    	if(json.length !=0){
+		    	console.log("Correct");
+		        res = true;
 
-// jQuery.ajax({
-// 	url: 'https://nit.tron.net.ua/api/product/list',
-// 	method: 'get',
-// 	dataType: 'json',
-// 	success: function(json){
-// 		json.forEach(product => $('.product-table').append(_makeTable(product)));
-// 	},
-// 	error: function(xhr){
-// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
-// 	},
-	
-// });
-// jQuery.ajax({
-// 	url: 'https://nit.tron.net.ua/api/category/list',
-// 	method: 'get',
-// 	dataType: 'json',
-// 	success: function(json){
-// 		json.forEach(product => $('.category-table').append(_makeCategoryTable(product)));
-// 	},
-// 	error: function(xhr){
-// 		alert("An error occured: " + xhr.status + " " + xhr.statusText);
-// 	},
-	
-// });
+		    }
+	    	else{
+	    		console.log("Incorrect");
+				res = false;
+	    	}
+	    	
+	    },
+	});
+	return res;
+};
 
 $(document).on('click' , '#sign-in' , function(){
 	if(CorrectLogin()){
@@ -522,20 +529,25 @@ $(document).on('click' , '#create-product-btn' , function(){
 
 		var _name = $('#create-product-name').val();
 		var _description = $('#create-product-description').val();
-		var _image = $('#create-product-image')[0];
+		var _image_url = $('#create-product-photo').val();
 		var _price = $('#create-product-price').val();
 		var _special_price = $('#create-product-special-price').val();
+		
+		console.log(_name);
+		console.log(_description);
+		console.log(_image_url);
+		console.log(_price);
+		console.log(_special_price);
 
 		var _post = {
 				name: _name,
                 description: _description,
-                image: _image,
+                image_url: _image_url,
                 price: _price,
                 special_price : _special_price
 		};
 
-		console.log($('#create-product-image')[0].files[0]);
-
+		
 		$.ajax({
 		    url: 'http://'+localIP+'/products/add',
 		    method: 'POST',
@@ -545,12 +557,81 @@ $(document).on('click' , '#create-product-btn' , function(){
             cache: false,
             timeout: 5000,
 		    success: function(json){
-		        console.log(json);
+		        
 		    },
 		});
 
 
 		UpdateEl('http://'+localIP+'/products' , '.product-table', _makeTable); // updating product table
+});
+
+
+//zalupa start
+
+$(document).on('click' , '#gridCheck' , function(){
+  var check=false;
+  var id = $(this).closest('[data-category-id]').data('category-id');
+  if(id==undefined)return;
+  console.log(id)
+  if(res==null){res.push(id)};
+  for(var i=0;i<res.length;i++){
+    if(res[i]==id){check=true;res.splice(i,1);break;}
+  }
+  if(!check){res.push(id)}
+  console.log(res);
+});
+
+
+$(document).on('click' , '#gridCheck' , function(){
+  var check=false;
+  var id = $(this).closest('[data-product-id]').data('product-id');
+  if(id==undefined)return;
+  console.log(id)
+  if(resproducts==null){resproducts.push(id)};
+  for(var i=0;i<resproducts.length;i++){
+    if(resproducts[i]==id){check=true;resproducts.splice(i,1);break;}
+  }
+  if(!check){resproducts.push(id)}
+  console.log(resproducts);
+});
+
+//zalupa end
+
+$(document).on('click' , '#category-add-btn' , function(){ // posting new category
+	var _name = $('#create-category-name').val();
+	var _products_id = resproducts.join(',');
+	var _description = $('#create-category-description').val();
+	resproducts = [];
+
+	$.ajax({
+		    url: 'http://'+localIP+'/category/add',
+		    type: 'POST',
+		    data: {
+		    	category_name : _name,
+		    	category_products_id : _products_id ,
+		    	description : _description
+		    },
+		    success: function(result){
+		        
+		    },
+	});
+
+	UpdateEl('http://'+localIP+'/category' , '.category-table', _makeCategoryTable); // updating product table
+});
+
+$(document).on('click' , '.category-table-delete-btn' , function(){
+	var id = $(this).closest('[data-product-id]').data('product-id');
+
+	$.ajax({
+		    url: 'http://'+localIP+'/category/delete/'+id,
+		    type: 'POST',
+		    data: {_method: 'delete', _id :id},
+		    success: function(result){
+		        
+		    },
+	});
+
+	UpdateEl('http://'+localIP+'/category' , '.category-table', _makeCategoryTable); // updating product table
 });
 
 $(document).on('click' , '.product-table-delete-btn' , function(){
@@ -568,18 +649,68 @@ $(document).on('click' , '.product-table-delete-btn' , function(){
 	UpdateEl('http://'+localIP+'/products' , '.product-table', _makeTable); // updating product table
 });
 
+var product_id;
 $(document).on('click' , '.change-product-butt', function(){
-	$("#create-product-name").attr("value",$(this).closest('tr').data('name'));
-	$("#create-product-price").attr("value",$(this).closest('tr').data('price'));
-	$("#create-product-special-price").attr("value",$(this).closest('tr').data('special-price'));
-	$("#create-product-image").attr("value",$(this).closest('tr').data('img-url'));
-	$("#create-product-description").empty();
-	$("#create-product-description").append($(this).closest('tr').data('product-description'));
+	product_id = $(this).closest('tr').data('product-id');
+	$("#edit-product-name").attr("value",$(this).closest('tr').data('name'));
+	$("#edit-product-price").attr("value",$(this).closest('tr').data('price'));
+	$("#edit-product-special-price").attr("value",$(this).closest('tr').data('special-price'));
+	$("#edit-product-image").attr("value",$(this).closest('tr').data('img-url'));
+	$("#edit-product-description").empty();
+	$("#edit-product-description").append($(this).closest('tr').data('product-description'));
 	
 });
+
+var category_id;
 $(document).on('click' , '.change-categ-butt', function(){
-	$("#create-category-name").attr("value",$(this).closest('tr').data('name'));
-	$("#create-category-description").empty();
+	category_id = $(this).closest('tr').data('category-id');
+	$("#edit-category-name").val('');
+	$("#edit-category-name").attr("value",$(this).closest('tr').data('name'));
+	// $("#edit-category-name").val($(this).closest('tr').data('name'));
+	console.log($(this).closest('tr').data('name'));
+	$("#edit-category-description").empty();
 	console.log($(this).closest('tr').data('category-description'));
-	$("#create-category-description").append($(this).closest('tr').data('category-description'));
+	$("#edit-category-description").append($(this).closest('tr').data('category-description'));
+});
+
+$(document).on('click' , '#product-save-btn' , function(){
+	 console.log("ID : " + product_id);
+	 $.ajax({
+	 	url: 'http://'+localIP+'/products/edit/',
+	    type: 'POST',
+	    data: {
+	    	id : product_id,
+	    	name : $('#edit-product-name').val(),
+	    	description : $('#edit-product-description').val(),
+	    	image_url : $('#edit-product-photo').val(),
+	    	price : $('#edit-product-price').val(),
+	    	special_price : $('#edit-product-special-price').val()
+
+	    },
+	    success: function(result){
+	        
+	    },
+	 });
+
+	 UpdateEl('http://'+localIP+'/products' , '.product-table', _makeTable);
+});
+
+$(document).on('click' , '#category-save-btn' , function(){
+	 console.log("ID : " + category_id);
+	 $.ajax({
+	 	url: 'http://'+localIP+'/category/edit/',
+	    type: 'POST',
+	    data: {
+	    	id : category_id,
+	    	category_name : $('#edit-category-name').val(),
+	    	description : $('#edit-category-description').val(),
+	    	category_products_id : resproducts.join(',')
+	    },
+	    success: function(result){
+	        
+	    },
+	 });
+	 resproducts = [];
+
+	UpdateEl('http://'+localIP+'/category' , '.category-table', _makeCategoryTable);
 });
